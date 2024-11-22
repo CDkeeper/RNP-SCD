@@ -38,9 +38,6 @@ import tokenizers
 from llava.constants import IGNORE_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN, IMAGE_TOKEN_INDEX
 from torch.utils.data import Dataset
 from llava.train.llava_trainer import LLaVADPOTrainer
-import sys
-sys.path.append(os.getcwd())
-from torch.cuda.amp import autocast
 from data_processing.utils import load_jsonl, load_json
 from llava import conversation as conversation_lib
 from llava.model import *
@@ -114,7 +111,7 @@ class ModelArguments:
 
     s2: Optional[bool] = field(default=False)
     s2_scales: Optional[str] = field(default="336,672,1008")
-    add_faster_video: Optional[bool] = field(default=False)
+
 
 @dataclass
 class DataArguments:
@@ -986,7 +983,7 @@ class DPODataset(Dataset):
         length_list = []
         for sample in self.list_data_dict:
             # Calculate the length of the prompt, answer, chosen, and rejected text
-            cur_len = len(sample["prompt"].split()) + len(sample["chosen"].split()) + len(sample["rejected"].split())
+            cur_len = len(sample["prompt"].split()) + len(sample["answer"].split()) + len(sample["chosen"].split()) + len(sample["rejected"].split())
             # Add additional tokens if an image is present
             img_tokens = 128 if "image" in sample else 0
             length_list.append(cur_len + img_tokens)
@@ -997,7 +994,7 @@ class DPODataset(Dataset):
         length_list = []
         for sample in self.list_data_dict:
             # Calculate the length of the prompt, answer, chosen, and rejected text
-            cur_len = len(sample["prompt"].split()) + len(sample["chosen"].split()) + len(sample["rejected"].split())
+            cur_len = len(sample["prompt"].split()) + len(sample["answer"].split()) + len(sample["chosen"].split()) + len(sample["rejected"].split())
             # If the sample includes a video, the length is positive; otherwise, it is negative
             cur_len = cur_len if ("video" in sample or "image" in sample) else -cur_len
             length_list.append(cur_len)
@@ -1044,7 +1041,6 @@ class DPODataset(Dataset):
     def __getitem__(self, i) -> Dict[str, torch.Tensor]:
         # TODO: define number of retries somewhere else
         num_base_retries = 3
-        num_two_retries = 5
         num_final_retries = 300
 
         # try the current sample first
@@ -1058,17 +1054,16 @@ class DPODataset(Dataset):
                 time.sleep(1)
 
         # try other samples, in case it is file corruption issue
-        for attempt_idx in range(num_two_retries):
+        for attempt_idx in range(num_base_retries):
             try:
-                # next_index = min(i + 1, len(self.list_data_dict) - 1)
-                sample_idx = random.choice(range(len(self)))
-                sample = self._get_item(sample_idx)
+                next_index = min(i + 1, len(self.list_data_dict) - 1)
+                # sample_idx = random.choice(range(len(self)))
+                sample = self._get_item(next_index)
                 return sample
             except Exception as e:
                 # no need to sleep
-                print(f"[Try other #{attempt_idx}] Failed to fetch sample {sample_idx}. Exception:", e)
+                print(f"[Try other #{attempt_idx}] Failed to fetch sample {next_index}. Exception:", e)
                 pass
-
 
         # still fail, most likely to be path issue or cloud disk issue, retry the same sample for longer
         # for attempt_idx in range(num_final_retries):
@@ -1102,7 +1097,6 @@ class DPODataset(Dataset):
             video_file = self.list_data_dict[i]["video"]
             video_folder = self.data_args.video_folder
             video_file = os.path.join(video_folder, video_file)
-            # print(video_file)
             suffix = video_file.split(".")[-1]
             if not os.path.exists(video_file):
                 print("File {} not exist!".format(video_file))
@@ -1635,7 +1629,6 @@ def train(attn_implementation=None):
         model.config.image_split_resolution = data_args.image_split_resolution
         model.config.tokenizer_padding_side = tokenizer.padding_side
         model.config.tokenizer_model_max_length = tokenizer.model_max_length
-        model.config.add_faster_video = model_args.add_faster_video
 
         ### Deciding train which part of the model
         if model_args.mm_tunable_parts is None:  # traditional way of deciding which part to train

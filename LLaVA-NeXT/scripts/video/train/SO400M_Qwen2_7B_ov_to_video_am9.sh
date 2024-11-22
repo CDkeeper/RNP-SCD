@@ -1,21 +1,16 @@
 #!/bin/bash
-export WANDB_ENTITY=2229859481
-export WANDB_PROJECT=llava-video-nextqa3
-export WANDB_MODE=online
-export PYTHONWARNINGS="ignore"
+
 # Set up the data folder
-IMAGE_FOLDER="/mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098"
-VIDEO_FOLDER="/mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098"
-DATA_YAML="/mnt/data1/chenda/codes/LLaVA-NeXT/test_train.yaml" # e.g exp.yaml
+IMAGE_FOLDER="XXX"
+VIDEO_FOLDER="XXX"
+DATA_YAML="XXX" # e.g exp.yaml
+
 ############### Prepare Envs #################
-# python3 -m pip install flash-attn --no-build-isolation
+python3 -m pip install flash-attn --no-build-isolation
 alias python=python3
 ############### Show Envs ####################
 
 nvidia-smi
-
-wandb login 529ec699e219c9771b54115d08072a1b09cd8a2c
-wandb online
 
 ################ Arnold Jobs ################
 
@@ -31,14 +26,13 @@ echo "BASE_RUN_NAME: ${BASE_RUN_NAME}"
 # Stage 2
 PROMPT_VERSION="qwen_1_5"
 MID_RUN_NAME="llavanext-${VISION_MODEL_VERSION_CLEAN}-${LLM_VERSION_CLEAN}-ov_to_video_am9"
-PREV_STAGE_CHECKPOINT="lmms-lab/llava-onevision-qwen2-7b-ov"
+PREV_STAGE_CHECKPOINT="lmms-lab/llava-onevision-qwen2-7b-ov-si"
 echo "PREV_STAGE_CHECKPOINT: ${PREV_STAGE_CHECKPOINT}"
 echo "MID_RUN_NAME: ${MID_RUN_NAME}"
 
 
 # ACCELERATE_CPU_AFFINITY=1 torchrun --nproc_per_node="${ARNOLD_WORKER_GPU}" --nnodes="${ARNOLD_WORKER_NUM}" --node_rank="${ARNOLD_ID}" --master_addr="${METIS_WORKER_0_HOST}" --master_port="${port_in_cmd}" \
 deepspeed --master_port 30000 \
-    --include localhost:0,1,5,6,7 \
     llava/train/train_mem.py \
     --deepspeed scripts/zero3.json \
     --model_name_or_path $PREV_STAGE_CHECKPOINT \
@@ -59,15 +53,15 @@ deepspeed --master_port 30000 \
     --mm_patch_merge_type spatial_unpad \
     --bf16 True \
     --run_name $MID_RUN_NAME \
-    --output_dir ./work_dirs/${MID_RUN_NAME}-nextqa3 \
+    --output_dir ./work_dirs/$MID_RUN_NAME \
     --num_train_epochs 1 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 2 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 100 \
-    --save_total_limit 3 \
+    --save_steps 500 \
+    --save_total_limit 1 \
     --learning_rate 1e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
