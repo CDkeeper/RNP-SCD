@@ -1,0 +1,12 @@
+datasets:
+  - json_path: /mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098/0_30_s_academic_v0_1/0_30_s_academic_mc_v0_1_qa_processed.dpo.sample_2000.final.refined.jsonl
+    sampling_strategy: "all"
+  - json_path: /mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098/0_30_s_academic_v0_1/0_30_s_academic_oe_v0_1_qa_processed.dpo.sample_2000.final.refined.jsonl
+    sampling_strategy: "all"
+  - json_path: /mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098/0_30_s_academic_v0_1/0_30_s_academic_v0_1_cap_processed.dpo.sample_400.final.gpt_answer.merge_1000.jsonl
+    sampling_strategy: "all"
+
+  - json_path: /mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098/30_60_s_academic_v0_1/30_60_s_academic_mc_v0_1_qa_processed.dpo.sample_2000.final.refined.jsonl
+    sampling_strategy: "all"
+  - json_path: /mnt/data1/chenda/huggingface/hub/datasets--lmms-lab--LLaVA-Video-178K/snapshots/6d8c562dc26d70042a0d9704d1cae58c94b89098/30_60_s_academic_v0_1/30_60_s_academic_oe_v0_1_qa_processed.dpo.sample_2000.final.refined.jsonl
+    sampling_strategy: "all"
