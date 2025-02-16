@@ -32,7 +32,7 @@ Our models finetuned with RNP-SCD:
 
 Basic Model | Checkpoint
  :- | :-
-`llava-RNP-SCD` |[llava-video-7b-RNP-SCD](https://huggingface.co/HuggingDaChen/llava-1.5-7b-RNP-SCD)
+`llava-RNP-SCD` |[llava-video-7b-RNP-SCD](https://huggingface.co/HuggingDaChen/llava-video-7b-RNP-SCD)
 
 
 
