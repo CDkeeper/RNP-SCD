@@ -1,38 +1,38 @@
-# RNP-SCD
+# EchoBat
 
 
 ## Checklist
 
 What you can find in this repo:
 
-- RNP-SCD
+- EchoBat
   - training code
   - trained model checkpoints
 - others
   - evaluation results for LLaVA-Video, LLaVA-OneVision
 
 
-## RNP-SCD
+## EchoBat
 
 ### Training
 
 Following the instruction of [LLaVA](https://github.com/haotian-liu/LLaVA) to prepare the environment, data (`LLaVA-Video-178K`) and pretraining models (e.g., `LLaVA-video-7b`). 
 
-Train the model with RNP-SCD. 
+Train the model with EchoBat. 
 
 ```bash
 cd LLaVA
 bash scripts/train/dpo_video_2.sh
 ```
-The main modifications to the original LLaVA code for RNP-SCD are detailed in (`.LLaVA-NeXT/llava/train/train_dpo2.py`) and (`LLaVA-NeXT/scripts/train/dpo_video_2.sh`).
+The main modifications to the original LLaVA code for EchoBat are detailed in (`.LLaVA-NeXT/llava/train/train_dpo2.py`) and (`LLaVA-NeXT/scripts/train/dpo_video_2.sh`).
 
 ### Checkpoint
 
-Our models finetuned with RNP-SCD:
+Our models finetuned with EchoBat:
 
 Basic Model | Checkpoint
  :- | :-
-`llava-RNP-SCD` |[llava-video-7b-RNP-SCD](https://huggingface.co/HuggingDaChen/llava-video-7b-RNP-SCD)
+`llava-EchoBat` |[llava-video-7b-EchoBat](https://huggingface.co/HuggingDaChen/llava-video-7b-EchoBat)
 
 
 
